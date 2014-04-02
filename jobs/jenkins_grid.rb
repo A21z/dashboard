@@ -43,7 +43,7 @@ SCHEDULER.every '10s', :first_in => 0 do
 
   # Filter, what we want to see
   jobs_failed = jobs.select { |job|
-    (!job['color'].include? 'blue') && (!job['name'].include? 'sphere')
+    ((job['color'].include? 'red') ||  (job['color'].include? 'yellow')) && (!job['name'].include? 'sphere')
   }
   jobs_failed.map! { |job|
     { name: trim_job_name(job['name']), state: job['color'] }
