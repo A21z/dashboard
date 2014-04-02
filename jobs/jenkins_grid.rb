@@ -11,8 +11,8 @@ views = {
 }
 
 
-# Collect failing jobs
-SCHEDULER.every '10s', :first_in => 0 do
+# Collect currently building jobs
+SCHEDULER.every '5s', :first_in => 0 do
   
   uri      = URI.parse(url)
   http     = Net::HTTP.new(uri.host, uri.port)
@@ -21,12 +21,6 @@ SCHEDULER.every '10s', :first_in => 0 do
   jobs     = JSON.parse(response.body)['jobs']
 
   # Filter, what we want to see
-  jobs_failed = jobs.select { |job|
-    (!job['color'].include? 'blue') && (!job['name'].include? 'sphere')
-  }
-  jobs_failed.map! { |job|
-    { name: trim_job_name(job['name']), state: job['color'] }
-  }
   jobs_building = jobs.select { |job|
     (job['color'].include? 'anime')
   }
@@ -34,7 +28,6 @@ SCHEDULER.every '10s', :first_in => 0 do
     { name: trim_job_name(job['name']), state: job['color'] }
   }
 
-  send_event('jenkins_jobs_grid_failed', { jobs: jobs_failed })
   send_event('jenkins_build', { jobs: jobs_building })
 end
 
@@ -55,15 +48,8 @@ SCHEDULER.every '10s', :first_in => 0 do
   jobs_failed.map! { |job|
     { name: trim_job_name(job['name']), state: job['color'] }
   }
-  jobs_building = jobs.select { |job|
-    (job['color'].include? 'anime')
-  }
-  jobs_building.map! { |job|
-    { name: trim_job_name(job['name']), state: job['color'] }
-  }
 
   send_event('jenkins_jobs_grid_failed', { jobs: jobs_failed })
-  send_event('jenkins_build', { jobs: jobs_building })
 end
 
 
