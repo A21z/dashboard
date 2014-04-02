@@ -104,23 +104,6 @@ SCHEDULER.every '5s', :first_in => 0 do
 end
 
 
-# Check build server load
-SCHEDULER.every '5s', :first_in => 0 do |job|
-  uri      = URI.parse(url)
-  http     = Net::HTTP.new(uri.host, uri.port)
-  api_url  = url + '/computer/api/json?tree=computer[displayName,idle]'
-  response = http.request(Net::HTTP::Get.new(api_url))
-  computer = JSON.parse(response.body)['computer']
-
-  load = 0
-  computer.each do |node|
-    load = false == node['idle'] ? load += 1 : load
-  end
-
-  send_event('jenkins_load', { value: load})
-end
-
-
 # Trim job names to avoid the long names break the frontend
 def trim_job_name(job_name)
   job_name = job_name.gsub('grid-', '');
