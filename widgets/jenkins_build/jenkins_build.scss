@@ -21,42 +21,40 @@
 
   .job[data-state="blue_anime"] {
     background-color: #475F77;
-    -webkit-animation:flashgreen;
-    -webkit-animation-duration:2s;
-    -webkit-animation-iteration-count:infinite;
   }
 
   .job[data-state="yellow_anime"] {
     background-color: #E9B64D;
-    -webkit-animation:flashyellow;
-    -webkit-animation-duration:2s;
-    -webkit-animation-iteration-count:infinite;
   }
 
   .job[data-state="red_anime"] {
     background-color: #D74B4B;
-    -webkit-animation:flashred;
+  }
+
+  .job[data-state="disabled"], .job[data-state="disabled_anime"], .job[data-state="aborted"], .job[data-state="aborted_anime"].job[data-state="grey"], .job[data-state="grey_anime"] {
+    background-color: #DCDDD8;
+    color: #333333;
+  }
+
+  table.progress-bar {
+    height: 5px;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 10px;
+  }
+
+  td.progress-bar-done {
+    background-color: #DCDDD8;
+    color: #333333;
+    -webkit-animation:flashbuild;
     -webkit-animation-duration:2s;
     -webkit-animation-iteration-count:infinite;
   }
 
-  .job[data-state="disabled_anime"], .job[data-state="aborted_anime"] {
-    background-color: #DCDDD8;
-    color: #333333;
-    -webkit-animation:flashgrey;
-    -webkit-animation-duration:2s;
-    -webkit-animation-iteration-count:infinite;
+  td.progress-bar-left {
+    background-color: #ffffff;
   }
 }
 
-@-webkit-keyframes flashgreen
-{50% {background: #5D8AA0;}}
-
-@-webkit-keyframes flashyellow
-{50% {background: #192823;}}
-
-@-webkit-keyframes flashred
-{50% {background: #A60000;}}
-
-@-webkit-keyframes flashgrey
-{50% {background: #AFAFA8;}}
+@-webkit-keyframes flashbuild
+{50% {background: #144c77;}}

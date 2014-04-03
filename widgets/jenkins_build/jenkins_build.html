@@ -1,7 +1,15 @@
 <h1 class="title" data-bind="title"></h1>
 
 <ul>
-  <li class="job" data-foreach-job="jobs" data-bind-data-state="job.state">
-    <span data-bind="job.name"></span>
-  </li>
+    <li class="job" data-foreach-job="jobs" data-bind-data-state="job.state" data-bind-data-done="job.done">
+        <div data-bind="job.name"></div>
+        <table class="progress-bar">
+            <tbody>
+                <tr>
+                    <td id="done" style="width:35%;" class="progress-bar-done"></td>
+                    <td id="left" style="width:65%;" class="progress-bar-left"></td>
+                </tr>
+            </tbody>
+        </table>
+    </li>
 </ul>
