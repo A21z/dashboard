@@ -16,7 +16,7 @@ SCHEDULER.every '5s', :first_in => 0 do
   
   uri      = URI.parse(url)
   http     = Net::HTTP.new(uri.host, uri.port)
-  api_url  = url + '/api/json?tree=jobs[name,color]'
+  api_url  = url + '/api/json?tree=jobs[name,color,url]'
   response = http.request(Net::HTTP::Get.new(api_url))
   jobs     = JSON.parse(response.body)['jobs']
 
@@ -25,7 +25,31 @@ SCHEDULER.every '5s', :first_in => 0 do
     (job['color'].include? 'anime')
   }
   jobs_building.map! { |job|
-    { name: trim_job_name(job['name']), state: job['color'] }
+    # Retrieve the last build aka the one actually building
+    uri        = URI.parse(job['url'])
+    http       = Net::HTTP.new(uri.host, uri.port)
+    api_url    = job['url'] + 'api/json?tree=lastBuild[url]'
+    response   = http.request(Net::HTTP::Get.new(api_url))
+    last_build = JSON.parse(response.body)['lastBuild']
+
+    # Retrieve the last build aka the one actually building
+    uri                 = URI.parse(last_build['url'])
+    http                = Net::HTTP.new(uri.host, uri.port)
+    api_url             = last_build['url'] + 'api/json?tree=timestamp'
+    response            = http.request(Net::HTTP::Get.new(api_url))
+    timestamp           = JSON.parse(response.body)['timestamp']
+    api_url             = last_build['url'] + 'api/json?tree=estimatedDuration'
+    response            = http.request(Net::HTTP::Get.new(api_url))
+    estimated_duration  = JSON.parse(response.body)['estimatedDuration']
+
+    offset = 22 # our lag to ci server
+
+    build_start = (timestamp / 1000)
+    elapsed = Time.now.to_i - build_start + offset
+    done = (elapsed * 100) / (estimated_duration / 1000)
+    left = 100 - done
+
+    { name: trim_job_name(job['name']), state: job['color'], done: done, left: left}
   }
 
   send_event('jenkins_build', { jobs: jobs_building })
