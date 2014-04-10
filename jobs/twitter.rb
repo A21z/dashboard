@@ -9,8 +9,8 @@ credentials = YAML::load(File.open(credentials_file))
 twitter = Twitter::REST::Client.new do |config|
   config.consumer_key = credentials['twitter']['consumer']['key']
   config.consumer_secret = credentials['twitter']['consumer']['secret']
-  config.oauth_token = credentials['twitter']['oauth']['token']
-  config.oauth_token_secret = credentials['twitter']['oauth']['secret']
+  config.access_token = credentials['twitter']['oauth']['token']
+  config.access_token_secret = credentials['twitter']['oauth']['secret']
 end
 
 search_term = URI::encode('#commercetools OR @commercetools OR #sphereio OR @sphereio')
