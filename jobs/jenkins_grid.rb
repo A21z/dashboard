@@ -13,7 +13,7 @@ views = {
 
 # Collect currently building jobs
 SCHEDULER.every '5s', :first_in => 0 do
-  
+
   uri      = URI.parse(url)
   http     = Net::HTTP.new(uri.host, uri.port)
   api_url  = url + '/api/json?tree=jobs[name,color,url]'
@@ -48,8 +48,14 @@ SCHEDULER.every '5s', :first_in => 0 do
     elapsed = Time.now.to_i - build_start + offset
     done = (elapsed * 100) / (estimated_duration / 1000)
     left = 100 - done
+    # we cannot predict, if the build takes longer, so we have to make sure
+    done = 100 if done > 100
+    left = 0 if left < 0
+    # provide string as compatible style percentage
+    done_width = done.to_s + '%'
+    left_width = left.to_s + '%'
 
-    { name: trim_job_name(job['name']), state: job['color'], done: done, left: left}
+    { name: trim_job_name(job['name']), state: job['color'], done: done_width, left: left_width }
   }
 
   send_event('jenkins_build', { jobs: jobs_building })
@@ -116,7 +122,7 @@ SCHEDULER.every '5s', :first_in => 0 do
         warning_count += 1
       end
     end
-    
+
     status = if critical_count > 0 then
                'danger'
              else
@@ -142,4 +148,4 @@ def trim_job_name(job_name)
   job_name = job_name.gsub('checkout', 'co');
   job_name = job_name.gsub('saucelabs', 'slabs');
   return job_name
-end 
+end
