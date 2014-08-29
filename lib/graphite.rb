@@ -18,7 +18,7 @@ class Graphite
     def query(name, since=nil)
         since ||= '-2min'
         url = "#{@url}/render?format=json&target=#{name}&from=#{since}"
-        response = RestClient.get url
+        response = RestClient.get URI.encode(url.strip)
         result = JSON.parse(response.body, :symbolize_names => true)
         return result.first
     end
